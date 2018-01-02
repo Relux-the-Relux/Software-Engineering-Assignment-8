@@ -75,6 +75,8 @@ public class KMP {
 		        j=b[j];
 		    }
 		}
+		
+		return;
 	}
 	/**
 	 * Loads the text file into a InputStream. Throws exception in case no file is accessible with the given path or if it is not a text file
