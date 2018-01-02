@@ -97,7 +97,7 @@ public class KMP {
 		Path path = FileSystems.getDefault().getPath(fileName);
 		String contentType = Files.probeContentType(path);
 		
-		if(contentType.substring(0, 3).equals("text")) {
+		if(contentType.substring(0, 4).equals("text") == false) {
 			throw new InvalidFileInputException("The given file was not a text file.");
 		}
 		
