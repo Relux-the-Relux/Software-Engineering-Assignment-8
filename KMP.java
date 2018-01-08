@@ -130,15 +130,16 @@ public class KMP {
 	 * @param i the character in that line where the first character of the pattern was found.
 	 */
 	private static void report(int row, int i) {
-	
+		
 		System.out.print(row + ": " + (i+1) + ":");
 		if(readLine.equals("") == false) {
 			System.out.print(readLine.substring(0, i-1) + ANSI_RED + readLine.substring(i, i+pattern.length()) + ANSI_RESET);
 		}
 		
+		
 		if(i + pattern.length() < readLine.length()){
 			
-			System.out.println(readLine.substring(0, i));
+			System.out.println(readLine.substring(i+pattern.length()));
 			return;
 			
 		}
