@@ -133,7 +133,7 @@ public class KMP {
 		
 		System.out.print(row + ": " + (i+1) + ":");
 		if(readLine.equals("") == false) {
-			System.out.print(readLine.substring(0, i-1) + ANSI_RED + readLine.substring(i, i+pattern.length()) + ANSI_RESET);
+			System.out.print(readLine.substring(0, i) + ANSI_RED + readLine.substring(i, i+pattern.length()) + ANSI_RESET);
 		}
 		
 		
