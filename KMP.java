@@ -131,20 +131,11 @@ public class KMP {
 	 */
 	private static void report(int row, int i) {
 		
-		System.out.print(row + ": " + (i+1) + ":");
-		if(readLine.equals("") == false) {
-			System.out.print(readLine.substring(0, i) + ANSI_RED + readLine.substring(i, i+pattern.length()) + ANSI_RESET);
-		}
+		System.out.println(row + ": " + (i+1) + ":"+ readLine.substring(0, i) +
+						ANSI_RED + readLine.substring(i, i+pattern.length()) + ANSI_RESET +
+						readLine.substring(i+pattern.length()));
 		
-		
-		if(i + pattern.length() < readLine.length()){
-			
-			System.out.println(readLine.substring(i+pattern.length()));
-			return;
-			
-		}
-		
-		System.out.println("");
+	
 		return;
 	}
 	
