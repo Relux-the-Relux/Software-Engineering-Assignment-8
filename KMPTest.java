@@ -67,6 +67,7 @@ public class KMPTest {
 				
 				//initialise second argument in arguments array as appropriate file
 				parameters[1] = testEmptyInputString.getName();
+				System.out.println("TEST: EMPTY_INPUT_STRING");
 				
 
 				// catch the Output Stream 
@@ -81,6 +82,8 @@ public class KMPTest {
 			    // put things back
 			    System.out.flush();
 			    System.setOut(old);
+			    //Returns the intercepted output from KMP.main to the console.
+			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
 			    
 			    // assert output
 				String wanted = ("");
@@ -122,12 +125,12 @@ public class KMPTest {
 		
 		//initialise second argument in arguments array as appropriate file
 		parameters[1] = testEmptyInputFile.getName();
+		System.out.println("TEST: EMPTY_INPUT_FILE");
 		
 
 		// catch the Output Stream 
 	    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 	    PrintStream printstream = new PrintStream(outStream);
-	    KMP.main(parameters);
 	    // save the old Stream
 	    PrintStream old = System.out;
 	    // use special stream
@@ -136,6 +139,8 @@ public class KMPTest {
 	    // put things back
 	    System.out.flush();
 	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString());
 	    
 	    // assert output
 		String wanted = ("");
@@ -228,12 +233,12 @@ public class KMPTest {
 				
 				//initialise second argument in arguments array as appropriate file
 				parameters[1] = testOverlapping.getName();
+				System.out.println("TEST: OVERLAPPING_STRING");
 				
 
 				// catch the Output Stream 
 			    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			    PrintStream printstream = new PrintStream(outStream);
-			    KMP.main(parameters);
 			    // save the old Stream
 			    PrintStream old = System.out;
 			    // use special stream
@@ -242,6 +247,8 @@ public class KMPTest {
 			    // put things back
 			    System.out.flush();
 			    System.setOut(old);
+			    //Returns the intercepted output from KMP.main to the console.
+			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
 			    
 			    // assert output
 				String wanted = ("1: 1:" + KMP.ANSI_RED +"HalloHallo"+KMP.ANSI_RESET+"HalloHallo"+System.lineSeparator()+
@@ -294,12 +301,12 @@ public class KMPTest {
 		
 		//initialise second argument in arguments array as appropriate file
 		parameters[1] = emptyLineTester.getName();
+		System.out.println("TEST: EMPTY_LINE");
 		
 
 		// catch the Output Stream 
 	    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 	    PrintStream printstream = new PrintStream(outStream);
-	    KMP.main(parameters);
 	    // save the old Stream
 	    PrintStream old = System.out;
 	    // use special stream
@@ -308,6 +315,8 @@ public class KMPTest {
 	    // put things back
 	    System.out.flush();
 	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
 	    
 	    // assert output
 		String wanted = ("4: 1:" + KMP.ANSI_RED + "Hallo" + KMP.ANSI_RESET + " World!");
@@ -337,12 +346,116 @@ public class KMPTest {
 	public void testStandardInput() {
 		
 	}
+	//-----------------------------------------------------------------------------
+	//TODO//
+	//Der Code muss ab hier, noch aufgeraeumt werden ist aber funktionstuechtig.
+	@Test(expected = FileNotAvailableException.class)
+	public void testFileNotAvailable() throws Exception {
+		String tester = "HalloHallo";
+		
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+						
+						
+		File testFileNotAvailable = classParentFolder.createTempFile("filenotavailable", ".txt", classParentFolder);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFileNotAvailable));
+		String SearchString = "HalloHallo";
+		writer.write(SearchString+SearchString);
+		writer.close();
+		
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFileNotAvailable.getName()+"3av2";
+		System.out.println("TEST: FileNotAvailableException");
+		KMP.main(parameters);
+		Assert.fail("Expected FileNotAvailableException");;
+		testFileNotAvailable.delete();
+	}
 	
-	@Test
-	public void test() throws Exception {
+	@Test(expected = InvalidFileInputException.class)
+	public void testInvalidFileInput() throws Exception {
+		String tester = "HalloHallo";
+		
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+						
+						
+		File testInvalidFileInput = classParentFolder.createTempFile("invalidfileinput", ".pdf", classParentFolder);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testInvalidFileInput));
+		String SearchString = "HalloHallo";
+		writer.write(SearchString+SearchString);
+		writer.close();
 		
 		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testInvalidFileInput.getName();
+		System.out.println("TEST: InvalidFileInputException");
+		KMP.main(parameters);
+
+		Assert.fail("Expected InvalidFileInputException");;
+		testInvalidFileInput.delete();
+	}
+	
+	@Test(expected = NonASCIIPattern.class)
+	public void testNonASCIIPattern() throws Exception {
+				String tester = "Hallo";
+						
+				//parameter array
+				String[] parameters = new String[2];
+				parameters[0] = tester;
+								
+								
+				File testNonASCIIPattern = classParentFolder.createTempFile("NonASCIIPattern", ".txt", classParentFolder);
+				BufferedWriter writer = new BufferedWriter(new FileWriter(testNonASCIIPattern));
+				writer.write('\u00E6');
+				writer.close();
+				
+				
+				//initialise second argument in arguments array as appropriate file
+				parameters[1] = testNonASCIIPattern.getName();
+				System.out.println("TEST: EMPTY_LINE");
+				KMP.main(parameters);
+				
+				Assert.fail("Expected NonASCIIPattern");
+				testNonASCIIPattern.delete();
+				
+	}
+	
+	@Test(expected = NotEnoughArgumentsException.class)
+	public void testNotEnoughArguments() throws Exception {
+		String tester = "HalloHallo";
 		
+		//parameter array
+		String[] parameters = new String[1];
+		parameters[0] = tester;
+						
+						
+		File testNotEnoughArguments = classParentFolder.createTempFile("NotEnoughArguments", ".txt", classParentFolder);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testNotEnoughArguments));
+		String SearchString = "HalloHallo";
+		writer.write(SearchString+SearchString);
+		writer.close();
+		
+		System.out.println("TEST: FileNotAvailableException");
+	
+	    KMP.main(parameters);
+	    Assert.fail("Expected NotEnoughArgumentsException");
+	    
+	    //Test 2
+	    parameters = new String[0];
+	    KMP.main(parameters);
+	    
+		Assert.fail("Expected NotEnoughArgumentsException");
+		
+		//Test 3
+		parameters = new String[2];
+		parameters[0] = "Hi there";
+		parameters[1] = testNotEnoughArguments.getName();
+		KMP.main(parameters);
+		
+		testNotEnoughArguments.delete();
 	}
 
 }
