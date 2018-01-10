@@ -42,11 +42,6 @@ public class KMPTest {
 	}
 	
 	
-	//rule used to test if appropriate exceptions are being thrown
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	
 	@Test(expected = EmptyStringException.class)
 	/**
 	 * Tests whether the program responds to an empty input string correctly
@@ -67,39 +62,8 @@ public class KMPTest {
 				
 				//initialise second argument in arguments array as appropriate file
 				parameters[1] = testEmptyInputString.getName();
-				System.out.println("TEST: EMPTY_INPUT_STRING");
 				
-
-				// catch the Output Stream 
-			    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-			    PrintStream printstream = new PrintStream(outStream);
-			    KMP.main(parameters);
-			    // save the old Stream
-			    PrintStream old = System.out;
-			    // use special stream
-			    System.setOut(printstream);
-			    KMP.main(parameters);
-			    // put things back
-			    System.out.flush();
-			    System.setOut(old);
-			    //Returns the intercepted output from KMP.main to the console.
-			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
-			    
-			    // assert output
-				String wanted = ("");
-				
-				// Compare character by character
-				boolean stringsAreSame = true;
-				char [] outputCharArray = outStream.toString().toCharArray();
-				char [] wantedCharArray = wanted.toCharArray();
-				int lineseparatorLenght = System.lineSeparator().length();
-				for(int i=0; i<wanted.length();i++){
-					if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
-						stringsAreSame = false;
-						break;
-					}
-				}
-				
+				KMP.main(parameters);
 				Assert.fail("Expected EmptyStringException");
 				testEmptyInputString.delete();
 	}
@@ -125,7 +89,6 @@ public class KMPTest {
 		
 		//initialise second argument in arguments array as appropriate file
 		parameters[1] = testEmptyInputFile.getName();
-		System.out.println("TEST: EMPTY_INPUT_FILE");
 		
 
 		// catch the Output Stream 
@@ -170,44 +133,54 @@ public class KMPTest {
 	 * Tests whether the program responds correctly to a single character input string
 	 */
 	public void testSingleCharInputString() throws Exception {
+		String tester = "A";
 		
-		//single character tester pattern
-		String tester = "b";
 		//parameter array
 		String[] parameters = new String[2];
 		parameters[0] = tester;
-		
-		//test first by inputting a file with no occurrences of the single character pattern
-		
-		File singleCharTester = classParentFolder.createTempFile("singleCharTester", ".txt", classParentFolder);//tempFolder.newFile("singleCharTester.txt");
-		FileWriter writer = new FileWriter(singleCharTester);
-		writer.write("memes are, in fact, neo-dadaism");
+						
+						
+		File testSingleCharInputString = classParentFolder.createTempFile("testSingleCharInputString", ".txt", classParentFolder);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testSingleCharInputString));
+		String SearchString = "Aber denn noch!";
+		writer.write(SearchString);
 		writer.close();
 		
-		System.out.println("Zeile 98: "+singleCharTester);
 		//initialise second argument in arguments array as appropriate file
-		parameters[1] = singleCharTester.getName();
-		KMP.main(parameters);
+		parameters[1] = testSingleCharInputString.getName();
 		
+
+		// catch the Output Stream 
+	    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+	    PrintStream printstream = new PrintStream(outStream);
+	    // save the old Stream
+	    PrintStream old = System.out;
+	    // use special stream
+	    System.setOut(printstream);
+	    KMP.main(parameters);
+	    // put things back
+	    System.out.flush();
+	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString());
+	    
+	    // assert output
+		String wanted = ("1: 1:"+KMP.ANSI_RED+"A"+KMP.ANSI_RESET+"ber denn noch!");
 		
-		//test whether anything has been written to the output stream
-		//if correct, nothing should have been written
-		//TODO: this implementation is wrong
-		assert(System.out.toString() == null);
+		// Compare character by character
+		boolean stringsAreSame = true;
+		char [] outputCharArray = outStream.toString().toCharArray();
+		char [] wantedCharArray = wanted.toCharArray();
+		int lineseparatorLenght = System.lineSeparator().length();
+		for(int i=0; i<wanted.length();i++){
+			if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+				stringsAreSame = false;
+				break;
+			}
+		}
 		
-		singleCharTester.delete();
-		
-		//now test by inputting a file within which the pattern occurs once 
-		File oneOccurence = classParentFolder.createTempFile("singleCharTester", ".txt", classParentFolder);//newFile("singleCharTester");
-		writer = new FileWriter(oneOccurence);
-		writer.write("the bastards will never get away with this");
-		writer.close();
-		
-		parameters[1] = oneOccurence.getName();
-		KMP.main(parameters);
-		
-		assert(System.out.toString() == "1:5: " + oneOccurence.toString()); 
-		oneOccurence.delete();
+		assert(stringsAreSame==true);
+		testSingleCharInputString.delete();
 	}
 	
 	@Test 
@@ -223,7 +196,7 @@ public class KMPTest {
 				String[] parameters = new String[2];
 				parameters[0] = tester;
 								
-								
+				//TEST 1	
 				File testOverlapping = classParentFolder.createTempFile("testOverlapping", ".txt", classParentFolder);
 				BufferedWriter writer = new BufferedWriter(new FileWriter(testOverlapping));
 				String SearchString = "HalloHallo";
@@ -233,7 +206,6 @@ public class KMPTest {
 				
 				//initialise second argument in arguments array as appropriate file
 				parameters[1] = testOverlapping.getName();
-				System.out.println("TEST: OVERLAPPING_STRING");
 				
 
 				// catch the Output Stream 
@@ -260,6 +232,53 @@ public class KMPTest {
 				char [] outputCharArray = outStream.toString().toCharArray();
 				char [] wantedCharArray = wanted.toCharArray();
 				int lineseparatorLenght = System.lineSeparator().length();
+				for(int i=0; i<wanted.length();i++){
+					if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+						stringsAreSame = false;
+						break;
+					}
+				}
+				
+				assert(stringsAreSame==true);
+				testOverlapping.delete();
+				
+				//TEST 2
+				
+				testOverlapping = classParentFolder.createTempFile("testOverlapping", ".txt", classParentFolder);
+				writer = new BufferedWriter(new FileWriter(testOverlapping));
+				SearchString = "HalloHallo";
+				writer.write(SearchString+"Hallo"+" Text "+SearchString);
+				writer.close();
+				
+				
+				//initialise second argument in arguments array as appropriate file
+				parameters[1] = testOverlapping.getName();
+				
+
+				// catch the Output Stream 
+			    outStream = new ByteArrayOutputStream();
+			    printstream = new PrintStream(outStream);
+			    // save the old Stream
+			    old = System.out;
+			    // use special stream
+			    System.setOut(printstream);
+			    KMP.main(parameters);
+			    // put things back
+			    System.out.flush();
+			    System.setOut(old);
+			    //Returns the intercepted output from KMP.main to the console.
+			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
+			    
+			    // assert output
+				wanted = ("1: 1:" + KMP.ANSI_RED +"HalloHallo"+KMP.ANSI_RESET+"Hallo"+" Text "+"HalloHallo"+System.lineSeparator()+
+								"1: 6:Hallo"+KMP.ANSI_RED+"HalloHallo"+KMP.ANSI_RESET+" Text "+"HalloHallo"+System.lineSeparator()+
+								"1: 22:HalloHalloHallo"+" Text "+KMP.ANSI_RED+"HalloHallo"+KMP.ANSI_RESET);
+				
+				// Compare character by character
+				stringsAreSame = true;
+				outputCharArray = outStream.toString().toCharArray();
+				wantedCharArray = wanted.toCharArray();
+				lineseparatorLenght = System.lineSeparator().length();
 				for(int i=0; i<wanted.length();i++){
 					if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
 						stringsAreSame = false;
@@ -301,7 +320,6 @@ public class KMPTest {
 		
 		//initialise second argument in arguments array as appropriate file
 		parameters[1] = emptyLineTester.getName();
-		System.out.println("TEST: EMPTY_LINE");
 		
 
 		// catch the Output Stream 
@@ -343,12 +361,131 @@ public class KMPTest {
 	 * Tests whether the program responds correctly to standard input with
 	 * input string both present and missing in the file. 
 	 */
-	public void testStandardInput() {
+	public void testStandardInput() throws Exception {
 		
+				File testStandardInput = classParentFolder.createTempFile("testStandardInput", ".txt", classParentFolder);
+				BufferedWriter writer = new BufferedWriter(new FileWriter(testStandardInput));
+				writer.write("Dieses Document soll die Wurzelberechnung beschreiben.");
+				writer.newLine();
+				writer.newLine();
+				writer.write("Als aller erstes muessen wir uns Fragen was ist den die Wurzel?");
+				writer.newLine();
+				writer.write("nun die Wurzel berechnet den Teiler der Zahl in der Wurzel sodass wenn man Teiler mal Teiler rechnet,");
+				writer.newLine();
+				writer.write("die Zahl ueber der wir die Wurzel ziehen wieder dabei rauskommt.");
+				writer.newLine();
+				writer.write("Nun schauen wir uns an wie die Wurzel berechnet wird und die Wurzel von X wird so berechnet:");
+				writer.newLine();
+				writer.write("Link: zu einer HTML-Seite.");
+				writer.close();
+				//Test 1
+				//Test String
+				String tester = "Wurzel";
+						
+				//parameter array
+				String[] parameters = new String[2];
+				parameters[0] = tester;
+				
+				//initialise second argument in arguments array as appropriate file
+				parameters[1] = testStandardInput.getName();
+				
+
+				// catch the Output Stream 
+			    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			    PrintStream printstream = new PrintStream(outStream);
+			    // save the old Stream
+			    PrintStream old = System.out;
+			    // use special stream
+			    System.setOut(printstream);
+			    KMP.main(parameters);
+			    // put things back
+			    System.out.flush();
+			    System.setOut(old);
+			    //Returns the intercepted output from KMP.main to the console.
+			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
+			    
+			    // assert output
+				String wanted = ("1: 26:Dieses Document soll die "+ KMP.ANSI_RED + "Wurzel" + KMP.ANSI_RESET + "berechnung beschreiben."
+								  +System.lineSeparator()+
+								  "3: 57:Als aller erstes muessen wir uns Fragen was ist den die "+KMP.ANSI_RED+"Wurzel"
+								  +KMP.ANSI_RESET+"?"+System.lineSeparator()+
+								  "4: 9:nun die "+KMP.ANSI_RED+"Wurzel"+KMP.ANSI_RESET+
+								  " berechnet den Teiler der Zahl in der Wurzel sodass wenn man Teiler mal Teiler rechnet,"+System.lineSeparator()+
+								  "4: 53:nun die Wurzel berechnet den Teiler der Zahl in der "+KMP.ANSI_RED+"Wurzel"+KMP.ANSI_RESET+
+								  " sodass wenn man Teiler mal Teiler rechnet,"+System.lineSeparator()+
+								  "5: 28:die Zahl ueber der wir die "+
+								  KMP.ANSI_RED+"Wurzel"+KMP.ANSI_RESET+" ziehen wieder dabei rauskommt."+System.lineSeparator()+
+								  "6: 32:Nun schauen wir uns an wie die "+KMP.ANSI_RED+"Wurzel"+KMP.ANSI_RESET+" berechnet wird und die Wurzel von X wird so berechnet:"
+								  +System.lineSeparator()+
+								  "6: 62:Nun schauen wir uns an wie die Wurzel berechnet wird und die "+KMP.ANSI_RED+"Wurzel"+KMP.ANSI_RESET+" von X wird so berechnet:");
+				
+				// Compare character by character
+				boolean stringsAreSame = true;
+				char [] outputCharArray = outStream.toString().toCharArray();
+				char [] wantedCharArray = wanted.toCharArray();
+				int lineseparatorLenght = System.lineSeparator().length();
+				for(int i=0; i<wanted.length();i++){
+					if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+						stringsAreSame = false;
+						break;
+					}
+				}
+				
+				assert(stringsAreSame==true);
+				testStandardInput.delete();
+				
+				//TODO//
+				//Diser Test muss noch gemacht werden
+				/*
+				//TEST 2
+				
+				//Test String
+				tester = "die Wurzel von X";
+						
+				//parameter array
+				parameters = new String[2];
+				parameters[0] = tester;
+				
+				//initialise second argument in arguments array as appropriate file
+				parameters[1] = testStandardInput.getName();
+				
+
+				// catch the Output Stream 
+			    outStream = new ByteArrayOutputStream();
+			    printstream = new PrintStream(outStream);
+			    // save the old Stream
+			    old = System.out;
+			    // use special stream
+			    System.setOut(printstream);
+			    KMP.main(parameters);
+			    // put things back
+			    System.out.flush();
+			    System.setOut(old);
+			    //Returns the intercepted output from KMP.main to the console.
+			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
+			    
+			    // assert output
+		        wanted = ("4: 1:" + KMP.ANSI_RED + "Hallo" + KMP.ANSI_RESET + " World!");
+				
+				// Compare character by character
+				stringsAreSame = true;
+				outputCharArray = outStream.toString().toCharArray();
+			    wantedCharArray = wanted.toCharArray();
+				lineseparatorLenght = System.lineSeparator().length();
+				for(int i=0; i<wanted.length();i++){
+					if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+						stringsAreSame = false;
+						break;
+					}
+				}
+				
+				assert(stringsAreSame==true);
+				testStandardInput.delete();
+				*/
+				
+				
 	}
-	//-----------------------------------------------------------------------------
-	//TODO//
-	//Der Code muss ab hier, noch aufgeraeumt werden ist aber funktionstuechtig.
+
 	@Test(expected = FileNotAvailableException.class)
 	public void testFileNotAvailable() throws Exception {
 		String tester = "HalloHallo";
@@ -367,9 +504,10 @@ public class KMPTest {
 		
 		//initialise second argument in arguments array as appropriate file
 		parameters[1] = testFileNotAvailable.getName()+"3av2";
-		System.out.println("TEST: FileNotAvailableException");
 		KMP.main(parameters);
-		Assert.fail("Expected FileNotAvailableException");;
+		
+		
+		Assert.fail("Expected FileNotAvailableException");
 		testFileNotAvailable.delete();
 	}
 	
@@ -391,16 +529,16 @@ public class KMPTest {
 		
 		//initialise second argument in arguments array as appropriate file
 		parameters[1] = testInvalidFileInput.getName();
-		System.out.println("TEST: InvalidFileInputException");
 		KMP.main(parameters);
 
+		
 		Assert.fail("Expected InvalidFileInputException");;
 		testInvalidFileInput.delete();
 	}
 	
 	@Test(expected = NonASCIIPattern.class)
 	public void testNonASCIIPattern() throws Exception {
-				String tester = "Hallo";
+				String tester = "\u00E6";
 						
 				//parameter array
 				String[] parameters = new String[2];
@@ -409,13 +547,12 @@ public class KMPTest {
 								
 				File testNonASCIIPattern = classParentFolder.createTempFile("NonASCIIPattern", ".txt", classParentFolder);
 				BufferedWriter writer = new BufferedWriter(new FileWriter(testNonASCIIPattern));
-				writer.write('\u00E6');
+				writer.write("Hallo Welt!");
 				writer.close();
 				
 				
 				//initialise second argument in arguments array as appropriate file
 				parameters[1] = testNonASCIIPattern.getName();
-				System.out.println("TEST: EMPTY_LINE");
 				KMP.main(parameters);
 				
 				Assert.fail("Expected NonASCIIPattern");
@@ -437,8 +574,6 @@ public class KMPTest {
 		String SearchString = "HalloHallo";
 		writer.write(SearchString+SearchString);
 		writer.close();
-		
-		System.out.println("TEST: FileNotAvailableException");
 	
 	    KMP.main(parameters);
 	    Assert.fail("Expected NotEnoughArgumentsException");
