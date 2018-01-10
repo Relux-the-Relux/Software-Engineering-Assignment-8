@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.PrintStream;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 
 public class KMPTest {
@@ -20,6 +18,8 @@ public class KMPTest {
 	//folder pointer to parent folder of KMP class, used for all tests, created in method setup()
 	public static File classParentFolder;
 	
+	
+	private File testFile;
 	
 	/**
 	 * Setup of the folder pointer before the execution of all tests.
@@ -41,6 +41,20 @@ public class KMPTest {
 		System.out.println("Zeile 39: "+classParentFolder.getPath());
 	}
 	
+	@Before 
+	public void createTestFile() {
+		try{
+			this.testFile = File.createTempFile("tester", ".txt", classParentFolder);
+		}
+		catch (IOException e) {
+			System.out.println("Failed to create test file.");
+		}
+	}
+	
+	@After
+	public void deleteTestFile() {
+		this.testFile.delete();
+	}
 	
 	@Test(expected = EmptyStringException.class)
 	/**
@@ -50,22 +64,20 @@ public class KMPTest {
 		//tester input string - empty for this test
 		String tester = "";	
 		//parameter array
-				String[] parameters = new String[2];
-				parameters[0] = tester;
+		String[] parameters = new String[2];
+		parameters[0] = tester;
 								
-								
-				File testEmptyInputString = classParentFolder.createTempFile("testEmptyInputString", ".txt", classParentFolder);
-				BufferedWriter writer = new BufferedWriter(new FileWriter(testEmptyInputString));
-				String SearchString = "Hier bin ich!";
-				writer.write(SearchString);
-				writer.close();
-				
-				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testEmptyInputString.getName();
-				
-				KMP.main(parameters);
-				Assert.fail("Expected EmptyStringException");
-				testEmptyInputString.delete();
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
+		String SearchString = "Hier bin ich!";
+		writer.write(SearchString);
+		writer.close();
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFile.getName();
+		
+		KMP.main(parameters);
+		Assert.fail("Expected EmptyStringException");
+	
 	}
 	
 	@Test
@@ -80,15 +92,14 @@ public class KMPTest {
 		String[] parameters = new String[2];
 		parameters[0] = tester;
 						
-						
-		File testEmptyInputFile = classParentFolder.createTempFile("testEmptyInputFile", ".txt", classParentFolder);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(testEmptyInputFile));
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 		String SearchString = "";
 		writer.write(SearchString);
 		writer.close();
 		
 		//initialise second argument in arguments array as appropriate file
-		parameters[1] = testEmptyInputFile.getName();
+		parameters[1] = testFile.getName();
 		
 
 		// catch the Output Stream 
@@ -121,7 +132,6 @@ public class KMPTest {
 		}
 		
 		assert(stringsAreSame==true);
-		testEmptyInputFile.delete();
 	}
 	
 	//TODO: is this one necessary if we have the above test method?
@@ -139,15 +149,13 @@ public class KMPTest {
 		String[] parameters = new String[2];
 		parameters[0] = tester;
 						
-						
-		File testSingleCharInputString = classParentFolder.createTempFile("testSingleCharInputString", ".txt", classParentFolder);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(testSingleCharInputString));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(this.testFile));
 		String SearchString = "Aber denn noch!";
 		writer.write(SearchString);
 		writer.close();
 		
 		//initialise second argument in arguments array as appropriate file
-		parameters[1] = testSingleCharInputString.getName();
+		parameters[1] = this.testFile.getName(); //testSingleCharInputString.getName();
 		
 
 		// catch the Output Stream 
@@ -180,7 +188,7 @@ public class KMPTest {
 		}
 		
 		assert(stringsAreSame==true);
-		testSingleCharInputString.delete();
+		
 	}
 	
 	@Test 
@@ -197,15 +205,14 @@ public class KMPTest {
 				parameters[0] = tester;
 								
 				//TEST 1	
-				File testOverlapping = classParentFolder.createTempFile("testOverlapping", ".txt", classParentFolder);
-				BufferedWriter writer = new BufferedWriter(new FileWriter(testOverlapping));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 				String SearchString = "HalloHallo";
 				writer.write(SearchString+SearchString);
 				writer.close();
 				
 				
 				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testOverlapping.getName();
+				parameters[1] = testFile.getName();
 				
 
 				// catch the Output Stream 
@@ -240,19 +247,19 @@ public class KMPTest {
 				}
 				
 				assert(stringsAreSame==true);
-				testOverlapping.delete();
+				testFile.delete();
 				
 				//TEST 2
 				
-				testOverlapping = classParentFolder.createTempFile("testOverlapping", ".txt", classParentFolder);
-				writer = new BufferedWriter(new FileWriter(testOverlapping));
+				testFile = File.createTempFile("testOverlappping", ".txt", classParentFolder);
+				writer = new BufferedWriter(new FileWriter(testFile));
 				SearchString = "HalloHallo";
 				writer.write(SearchString+"Hallo"+" Text "+SearchString);
 				writer.close();
 				
 				
 				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testOverlapping.getName();
+				parameters[1] = testFile.getName();
 				
 
 				// catch the Output Stream 
@@ -287,7 +294,6 @@ public class KMPTest {
 				}
 				
 				assert(stringsAreSame==true);
-				testOverlapping.delete();
 				
 	}
 	
@@ -306,8 +312,7 @@ public class KMPTest {
 		parameters[0] = tester;
 						
 						
-		File emptyLineTester = classParentFolder.createTempFile("emptyLineTester", ".txt", classParentFolder);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(emptyLineTester));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(this.testFile)); 
 		String SearchString = "Hallo World!";
 		writer.write("Im your Son.");
 		writer.newLine();
@@ -319,7 +324,7 @@ public class KMPTest {
 		
 		
 		//initialise second argument in arguments array as appropriate file
-		parameters[1] = emptyLineTester.getName();
+		parameters[1] = this.testFile.getName(); 
 		
 
 		// catch the Output Stream 
@@ -352,7 +357,6 @@ public class KMPTest {
 		}
 		
 		assert(stringsAreSame==true);
-		emptyLineTester.delete();
 		
 	}
 	
@@ -363,8 +367,7 @@ public class KMPTest {
 	 */
 	public void testStandardInput() throws Exception {
 		
-				File testStandardInput = classParentFolder.createTempFile("testStandardInput", ".txt", classParentFolder);
-				BufferedWriter writer = new BufferedWriter(new FileWriter(testStandardInput));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 				writer.write("Dieses Document soll die Wurzelberechnung beschreiben.");
 				writer.newLine();
 				writer.newLine();
@@ -387,7 +390,7 @@ public class KMPTest {
 				parameters[0] = tester;
 				
 				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testStandardInput.getName();
+				parameters[1] = testFile.getName();
 				
 
 				// catch the Output Stream 
@@ -432,7 +435,7 @@ public class KMPTest {
 				}
 				
 				assert(stringsAreSame==true);
-				testStandardInput.delete();
+				testFile.delete();
 				
 				//TODO//
 				//Diser Test muss noch gemacht werden
@@ -494,21 +497,19 @@ public class KMPTest {
 		String[] parameters = new String[2];
 		parameters[0] = tester;
 						
-						
-		File testFileNotAvailable = classParentFolder.createTempFile("filenotavailable", ".txt", classParentFolder);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(testFileNotAvailable));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 		String SearchString = "HalloHallo";
 		writer.write(SearchString+SearchString);
 		writer.close();
 		
 		
 		//initialise second argument in arguments array as appropriate file
-		parameters[1] = testFileNotAvailable.getName()+"3av2";
+		parameters[1] = testFile.getName()+"3av2";
 		KMP.main(parameters);
 		
 		
 		Assert.fail("Expected FileNotAvailableException");
-		testFileNotAvailable.delete();
+
 	}
 	
 	@Test(expected = InvalidFileInputException.class)
@@ -520,20 +521,18 @@ public class KMPTest {
 		parameters[0] = tester;
 						
 						
-		File testInvalidFileInput = classParentFolder.createTempFile("invalidfileinput", ".pdf", classParentFolder);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(testInvalidFileInput));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 		String SearchString = "HalloHallo";
 		writer.write(SearchString+SearchString);
 		writer.close();
 		
 		
 		//initialise second argument in arguments array as appropriate file
-		parameters[1] = testInvalidFileInput.getName();
+		parameters[1] = testFile.getName();
 		KMP.main(parameters);
 
 		
-		Assert.fail("Expected InvalidFileInputException");;
-		testInvalidFileInput.delete();
+		Assert.fail("Expected InvalidFileInputException");
 	}
 	
 	@Test(expected = NonASCIIPattern.class)
@@ -545,18 +544,17 @@ public class KMPTest {
 				parameters[0] = tester;
 								
 								
-				File testNonASCIIPattern = classParentFolder.createTempFile("NonASCIIPattern", ".txt", classParentFolder);
-				BufferedWriter writer = new BufferedWriter(new FileWriter(testNonASCIIPattern));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 				writer.write("Hallo Welt!");
 				writer.close();
 				
 				
 				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testNonASCIIPattern.getName();
+				parameters[1] = testFile.getName();
 				KMP.main(parameters);
 				
 				Assert.fail("Expected NonASCIIPattern");
-				testNonASCIIPattern.delete();
+
 				
 	}
 	
@@ -569,8 +567,7 @@ public class KMPTest {
 		parameters[0] = tester;
 						
 						
-		File testNotEnoughArguments = classParentFolder.createTempFile("NotEnoughArguments", ".txt", classParentFolder);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(testNotEnoughArguments));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
 		String SearchString = "HalloHallo";
 		writer.write(SearchString+SearchString);
 		writer.close();
@@ -587,10 +584,9 @@ public class KMPTest {
 		//Test 3
 		parameters = new String[2];
 		parameters[0] = "Hi there";
-		parameters[1] = testNotEnoughArguments.getName();
+		parameters[1] = testFile.getName();
 		KMP.main(parameters);
 		
-		testNotEnoughArguments.delete();
 	}
 
 }
