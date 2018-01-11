@@ -17,7 +17,6 @@ public class KMP {
 	
 	static String readLine;// a line of text read from the given document
 	static String pattern;// pattern to be searched in the document
-	static BufferedReader bufferedFileReader;
 	
 	/**
 	 * Given a pattern and an text document, it uses the KMP algorithm to search the pattern within the document.
@@ -40,13 +39,15 @@ public class KMP {
 		int[] b = preprocessPattern(pattern);
 		
 		InputStream fileStream = loadFile(args);
-		bufferedFileReader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.US_ASCII));
+		BufferedReader bufferedFileReader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.US_ASCII));
 		readLine = bufferedFileReader.readLine();
 		
 		for(int row = 1; readLine != null; row++) {
 			
+
 			//Tests if the file consists of ASCII characters
 			if(readLine.matches("\\A\\p{ASCII}*\\z") == false) {
+				bufferedFileReader.close();
 				throw new NonASCIIPattern("Please give an ASCII File.");
 	        }
 			
@@ -55,7 +56,6 @@ public class KMP {
 			readLine = bufferedFileReader.readLine();
 			
 		}
-		
 		bufferedFileReader.close();
 		return;
 	}
@@ -102,7 +102,7 @@ public class KMP {
 		if(fileStream == null) {
 			throw new FileNotAvailableException("File could not be found nor open.");
 		}
-		
+
 		return fileStream;
 	}
 	/**
