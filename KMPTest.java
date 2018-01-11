@@ -28,17 +28,13 @@ public class KMPTest {
 	@BeforeClass
 	public static void setup() throws IOException {
 		//get the path of the class files being used
-		String tempFolderPath = KMP.class.getClassLoader().getResource(File.separator).getPath();
-		//print out said path for testing purposes
-		//TODO: delete once tests function as expected
-		System.out.println("Zeile 31: "+tempFolderPath);
+		String tempFolderPath = KMP.class.getProtectionDomain().getCodeSource().getLocation().getPath();	//KMP.class.getClassLoader().getResource(File.separator).getPath();
 		
 		int charIndex = tempFolderPath.lastIndexOf("/");
 		tempFolderPath = tempFolderPath.substring(0, charIndex + 1);
 		
 		//appropriately instantiate folder pointer
 		classParentFolder = new File(tempFolderPath);
-		System.out.println("Zeile 39: "+classParentFolder.getPath());
 	}
 	
 	@Before 
