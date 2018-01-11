@@ -27,6 +27,7 @@ public class KMP {
 	 * @param args[1] the path of the document to be searched within. The path is relative, so if the document is in the same folder only 
 	 * the name is necessary.
 	 * @throws NotEnoughArgumentsException if not enough arguments are passed by the command line.
+	 * @throws NonASCIIPattern if a line from the loaded file is found to not use an Non-ASCII character(byte).
 	 */
 	public static void main(String[] args) throws Exception{
 		
@@ -44,7 +45,13 @@ public class KMP {
 		
 		for(int row = 1; readLine != null; row++) {
 			
+			//Tests if the file consists of ASCII characters
+			if(readLine.matches("\\A\\p{ASCII}*\\z") == false) {
+				throw new NonASCIIPattern("Please give an ASCII File.");
+	        }
+			
 			kmpSearchLine(b, row);
+			
 			readLine = bufferedFileReader.readLine();
 			
 		}
@@ -81,12 +88,12 @@ public class KMP {
 		return;
 	}
 	/**
-	 * Loads the text file into a InputStream. Throws exception in case no file is accessible with the given path or if it is not a text file
+	 * Loads the text file into a InputStream, if it is not a Text file it interprets its bytes as ASCII characters and loads it.
+	 * Throws exception in case no file is accessible with the given path.
 	 * 
 	 * @param args command line arguments.
 	 * @return A InputStream of the wished text file.
 	 * @throws FileNotAvailableException if the file can't be found nor open
-	 * @throws InvalidFileInputException if the file isn't a text file
 	 */
 	private static InputStream loadFile(String[] args) throws Exception {
 		String fileName = args[1];
@@ -94,14 +101,6 @@ public class KMP {
 		InputStream fileStream = KMP.class.getResourceAsStream(fileName);
 		if(fileStream == null) {
 			throw new FileNotAvailableException("File could not be found nor open.");
-		}
-		
-		Path path = FileSystems.getDefault().getPath(fileName);
-		String contentType = Files.probeContentType(path);
-		
-		if(contentType.substring(0, 4).equals("text") == false) {
-			fileStream.close();
-			throw new InvalidFileInputException("The given file was not a text file.");
 		}
 		
 		return fileStream;
