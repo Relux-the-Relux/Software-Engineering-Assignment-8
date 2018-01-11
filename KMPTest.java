@@ -349,7 +349,7 @@ public class KMPTest {
 	@Test
 	public void testOverlappingStringOccurences_Test_03() throws Exception {
 		//Test String
-		String tester = "aabcaa"; //"HalloHallo";
+		String tester = "aabcaa"; 
 			
 		//parameter array
 		String[] parameters = new String[2];
