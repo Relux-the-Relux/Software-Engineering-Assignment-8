@@ -349,6 +349,58 @@ public class KMPTest {
 		assert(stringsAreSame==true);
 		
 	}
+	
+	@Test
+	public void testOverlappingStringOccurences_Test_03() throws Exception {
+		//Test String
+		String tester = "aabcaa"; //"HalloHallo";
+			
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
+		writer.write("aabcaabcaatextaabcaa");
+		writer.close();
+		
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFile.getName();
+		
+
+		// catch the Output Stream 
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		PrintStream printstream = new PrintStream(outStream);
+	    // save the old Stream
+		PrintStream old = System.out;
+	    // use special stream
+	    System.setOut(printstream);
+	    KMP.main(parameters);
+	    // put things back
+	    System.out.flush();
+	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
+	    
+	    // assert output
+		String wanted = ("1: 1:" + KMP.ANSI_RED +tester+KMP.ANSI_RESET+"bcaatextaabcaa"+System.lineSeparator()+
+						"1: 5:aabc"+KMP.ANSI_RED+tester+KMP.ANSI_RESET+"textaabcaa"+System.lineSeparator()+
+						"1: 15:aabcaabcaatext"+KMP.ANSI_RED+tester+KMP.ANSI_RESET);
+		
+		// Compare character by character
+		boolean stringsAreSame = true;
+		char[] outputCharArray = outStream.toString().toCharArray();
+		char[] wantedCharArray = wanted.toCharArray();
+		int lineseparatorLenght = System.lineSeparator().length();
+		for(int i=0; i<wanted.length();i++){
+			if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+				stringsAreSame = false;
+				break;
+			}
+		}
+		
+		assert(stringsAreSame==true);
+	}
 	@Test
 	/**
 	 * Tests whether the program responds correctly when there are empty lines 
