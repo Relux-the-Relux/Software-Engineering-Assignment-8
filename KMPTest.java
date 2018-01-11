@@ -612,22 +612,6 @@ public class KMPTest {
 		
 }
 	
-	@Test(expected = NonASCIIPattern.class)
-	public void testNonASCIIPattern_TestPDF() throws Exception {
-		String tester = "Hier";
-				
-		//parameter array
-		String[] parameters = new String[2];
-		parameters[0] = tester;
-		
-		//initialise second argument in arguments array as appropriate file
-		parameters[1] = "SE08_TestPDF.pdf";
-		KMP.main(parameters);
-		
-		Assert.fail("Expected NonASCIIPattern");
-
-		
-}
 
 	@Test(expected = NotEnoughArgumentsException.class)
 	public void testNotEnoughArguments() throws Exception {
