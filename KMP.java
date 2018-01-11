@@ -17,7 +17,6 @@ public class KMP {
 	
 	static String readLine;// a line of text read from the given document
 	static String pattern;// pattern to be searched in the document
-	static BufferedReader bufferedFileReader;
 	
 	/**
 	 * Given a pattern and an text document, it uses the KMP algorithm to search the pattern within the document.
@@ -39,16 +38,19 @@ public class KMP {
 		int[] b = preprocessPattern(pattern);
 		
 		InputStream fileStream = loadFile(args);
-		bufferedFileReader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.US_ASCII));
+		BufferedReader bufferedFileReader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.US_ASCII));
 		readLine = bufferedFileReader.readLine();
 		
 		for(int row = 1; readLine != null; row++) {
+			
+			if(readLine.matches("\\A\\p{ASCII}*\\z") == false) {
+				throw new NonASCIIPattern("Please give an ASCII.") ;
+			}
 			
 			kmpSearchLine(b, row);
 			readLine = bufferedFileReader.readLine();
 			
 		}
-		
 		bufferedFileReader.close();
 		return;
 	}
@@ -95,14 +97,14 @@ public class KMP {
 		if(fileStream == null) {
 			throw new FileNotAvailableException("File could not be found nor open.");
 		}
+		//TODO//
+		// Diese Exception ist unnötig!!!
+		//Path path = FileSystems.getDefault().getPath(fileName);
+//		String contentType = Files.probeContentType(path);
 		
-		Path path = FileSystems.getDefault().getPath(fileName);
-		String contentType = Files.probeContentType(path);
-		
-		if(contentType.substring(0, 4).equals("text") == false) {
-			fileStream.close();
-			throw new InvalidFileInputException("The given file was not a text file.");
-		}
+//		if(contentType.substring(0, 4).equals("text") == false) {
+//			throw new InvalidFileInputException("The given file was not a text file.");
+//		}
 		
 		return fileStream;
 	}
