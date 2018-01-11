@@ -134,9 +134,55 @@ public class KMPTest {
 		assert(stringsAreSame==true);
 	}
 	
-	//TODO: is this one necessary if we have the above test method?
-	//public void testFileShorterThanString()
 	
+	@Test
+	public void testFileShorterThanString() throws Exception{
+		String tester = "Ich bin einfach zu lang!";
+		
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+						
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
+		String SearchString = "Ich bin";
+		writer.write(SearchString);
+		writer.close();
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFile.getName();
+		
+
+		// catch the Output Stream 
+	    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+	    PrintStream printstream = new PrintStream(outStream);
+	    // save the old Stream
+	    PrintStream old = System.out;
+	    // use special stream
+	    System.setOut(printstream);
+	    KMP.main(parameters);
+	    // put things back
+	    System.out.flush();
+	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString());
+	    
+	    // assert output
+		String wanted = ("");
+		
+		// Compare character by character
+		boolean stringsAreSame = true;
+		char [] outputCharArray = outStream.toString().toCharArray();
+		char [] wantedCharArray = wanted.toCharArray();
+		int lineseparatorLenght = System.lineSeparator().length();
+		for(int i=0; i<wanted.length();i++){
+			if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+				stringsAreSame = false;
+				break;
+			}
+		}
+		assert(stringsAreSame==true);
+	}
 	
 	@Test
 	/**
@@ -196,8 +242,8 @@ public class KMPTest {
 	 * Tests whether the program responds correctly to an input string that 
 	 * overlaps with itself within the text
 	 */
-	public void testOverlappingStringOccurences() throws Exception{
-		//Test String
+	public void testOverlappingStringOccurences_Test_01() throws Exception{
+				//Test String
 				String tester = "HalloHallo";
 						
 				//parameter array
@@ -247,56 +293,114 @@ public class KMPTest {
 				}
 				
 				assert(stringsAreSame==true);
-				testFile.delete();
-				
-				//TEST 2
-				
-				testFile = File.createTempFile("testOverlappping", ".txt", classParentFolder);
-				writer = new BufferedWriter(new FileWriter(testFile));
-				SearchString = "HalloHallo";
-				writer.write(SearchString+"Hallo"+" Text "+SearchString);
-				writer.close();
-				
-				
-				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testFile.getName();
-				
-
-				// catch the Output Stream 
-			    outStream = new ByteArrayOutputStream();
-			    printstream = new PrintStream(outStream);
-			    // save the old Stream
-			    old = System.out;
-			    // use special stream
-			    System.setOut(printstream);
-			    KMP.main(parameters);
-			    // put things back
-			    System.out.flush();
-			    System.setOut(old);
-			    //Returns the intercepted output from KMP.main to the console.
-			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
-			    
-			    // assert output
-				wanted = ("1: 1:" + KMP.ANSI_RED +"HalloHallo"+KMP.ANSI_RESET+"Hallo"+" Text "+"HalloHallo"+System.lineSeparator()+
-								"1: 6:Hallo"+KMP.ANSI_RED+"HalloHallo"+KMP.ANSI_RESET+" Text "+"HalloHallo"+System.lineSeparator()+
-								"1: 22:HalloHalloHallo"+" Text "+KMP.ANSI_RED+"HalloHallo"+KMP.ANSI_RESET);
-				
-				// Compare character by character
-				stringsAreSame = true;
-				outputCharArray = outStream.toString().toCharArray();
-				wantedCharArray = wanted.toCharArray();
-				lineseparatorLenght = System.lineSeparator().length();
-				for(int i=0; i<wanted.length();i++){
-					if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
-						stringsAreSame = false;
-						break;
-					}
-				}
-				
-				assert(stringsAreSame==true);
 				
 	}
 	
+	@Test
+	public void testOverlappingStringOccurences_Test_02() throws Exception{
+		//Test String
+		String tester = "HalloHallo";
+				
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
+		String SearchString = "HalloHallo";
+		writer.write(SearchString+"Hallo"+" Text "+SearchString);
+		writer.close();
+		
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFile.getName();
+		
+
+		// catch the Output Stream 
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		PrintStream printstream = new PrintStream(outStream);
+	    // save the old Stream
+		PrintStream old = System.out;
+	    // use special stream
+	    System.setOut(printstream);
+	    KMP.main(parameters);
+	    // put things back
+	    System.out.flush();
+	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
+	    
+	    // assert output
+		String wanted = ("1: 1:" + KMP.ANSI_RED +"HalloHallo"+KMP.ANSI_RESET+"Hallo"+" Text "+"HalloHallo"+System.lineSeparator()+
+						"1: 6:Hallo"+KMP.ANSI_RED+"HalloHallo"+KMP.ANSI_RESET+" Text "+"HalloHallo"+System.lineSeparator()+
+						"1: 22:HalloHalloHallo"+" Text "+KMP.ANSI_RED+"HalloHallo"+KMP.ANSI_RESET);
+		
+		// Compare character by character
+		boolean stringsAreSame = true;
+		char[] outputCharArray = outStream.toString().toCharArray();
+		char[] wantedCharArray = wanted.toCharArray();
+		int lineseparatorLenght = System.lineSeparator().length();
+		for(int i=0; i<wanted.length();i++){
+			if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+				stringsAreSame = false;
+				break;
+			}
+		}
+		
+		assert(stringsAreSame==true);
+		
+	}
+	
+	@Test
+	public void testOverlappingStringOccurences_Test_03() throws Exception {
+		//Test String
+		String tester = "aabcaa"; //"HalloHallo";
+			
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
+		writer.write("aabcaabcaatextaabcaa");
+		writer.close();
+		
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFile.getName();
+		
+
+		// catch the Output Stream 
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		PrintStream printstream = new PrintStream(outStream);
+	    // save the old Stream
+		PrintStream old = System.out;
+	    // use special stream
+	    System.setOut(printstream);
+	    KMP.main(parameters);
+	    // put things back
+	    System.out.flush();
+	    System.setOut(old);
+	    //Returns the intercepted output from KMP.main to the console.
+	    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
+	    
+	    // assert output
+		String wanted = ("1: 1:" + KMP.ANSI_RED +tester+KMP.ANSI_RESET+"bcaatextaabcaa"+System.lineSeparator()+
+						"1: 5:aabc"+KMP.ANSI_RED+tester+KMP.ANSI_RESET+"textaabcaa"+System.lineSeparator()+
+						"1: 15:aabcaabcaatext"+KMP.ANSI_RED+tester+KMP.ANSI_RESET);
+		
+		// Compare character by character
+		boolean stringsAreSame = true;
+		char[] outputCharArray = outStream.toString().toCharArray();
+		char[] wantedCharArray = wanted.toCharArray();
+		int lineseparatorLenght = System.lineSeparator().length();
+		for(int i=0; i<wanted.length();i++){
+			if(outputCharArray[i]!=wantedCharArray[i]|| wanted.length()!=(outStream.toString().length()-lineseparatorLenght)){
+				stringsAreSame = false;
+				break;
+			}
+		}
+		
+		assert(stringsAreSame==true);
+	}
 	@Test
 	/**
 	 * Tests whether the program responds correctly when there are empty lines 
@@ -435,11 +539,8 @@ public class KMPTest {
 				}
 				
 				assert(stringsAreSame==true);
-				testFile.delete();
 				
-				//TODO//
-				//Diser Test muss noch gemacht werden
-				/*
+				
 				//TEST 2
 				
 				//Test String
@@ -450,7 +551,7 @@ public class KMPTest {
 				parameters[0] = tester;
 				
 				//initialise second argument in arguments array as appropriate file
-				parameters[1] = testStandardInput.getName();
+				parameters[1] = testFile.getName();
 				
 
 				// catch the Output Stream 
@@ -468,7 +569,7 @@ public class KMPTest {
 			    System.out.println(outStream.toString().substring(0, outStream.toString().length()-System.lineSeparator().length()));
 			    
 			    // assert output
-		        wanted = ("4: 1:" + KMP.ANSI_RED + "Hallo" + KMP.ANSI_RESET + " World!");
+		        wanted = ("6: 58:Nun schauen wir uns an wie die Wurzel berechnet wird und " + KMP.ANSI_RED + "die Wurzel von X" + KMP.ANSI_RESET + " wird so berechnet:");
 				
 				// Compare character by character
 				stringsAreSame = true;
@@ -483,8 +584,7 @@ public class KMPTest {
 				}
 				
 				assert(stringsAreSame==true);
-				testStandardInput.delete();
-				*/
+				
 				
 				
 	}
@@ -512,31 +612,9 @@ public class KMPTest {
 
 	}
 	
-	@Test(expected = InvalidFileInputException.class)
-	public void testInvalidFileInput() throws Exception {
-		String tester = "HalloHallo";
-		
-		//parameter array
-		String[] parameters = new String[2];
-		parameters[0] = tester;
-						
-						
-		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
-		String SearchString = "HalloHallo";
-		writer.write(SearchString+SearchString);
-		writer.close();
-		
-		
-		//initialise second argument in arguments array as appropriate file
-		parameters[1] = testFile.getName();
-		KMP.main(parameters);
-
-		
-		Assert.fail("Expected InvalidFileInputException");
-	}
 	
 	@Test(expected = NonASCIIPattern.class)
-	public void testNonASCIIPattern() throws Exception {
+	public void testNonASCIIPattern_InSearchString() throws Exception {
 				String tester = "\u00E6";
 						
 				//parameter array
@@ -558,6 +636,34 @@ public class KMPTest {
 				
 	}
 	
+	@Test(expected = NonASCIIPattern.class)
+	public void testNonASCIIPattern_InFile() throws Exception {
+		String tester = "Hier";
+				
+		//parameter array
+		String[] parameters = new String[2];
+		parameters[0] = tester;
+						
+						
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
+		writer.write("Hier!");
+		writer.write("Jetzt");
+		writer.write("\u00E6");
+		writer.newLine();
+		writer.newLine();
+		writer.write("Ende");
+		writer.close();
+		
+		
+		//initialise second argument in arguments array as appropriate file
+		parameters[1] = testFile.getName();
+		KMP.main(parameters);
+		
+		Assert.fail("Expected NonASCIIPattern");
+		
+}
+	
+
 	@Test(expected = NotEnoughArgumentsException.class)
 	public void testNotEnoughArguments() throws Exception {
 		String tester = "HalloHallo";
